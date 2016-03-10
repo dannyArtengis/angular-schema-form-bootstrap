@@ -15,59 +15,81 @@ $templateCache.put("decorators/bootstrap/submit.html","<div class=\"form-group s
 $templateCache.put("decorators/bootstrap/tabarray.html","<div ng-init=\"selected = { tab: 0 }\" ng-model=\"modelArray\" schema-validate=\"form\" sf-field-model=\"sf-new-array\" sf-new-array=\"\" class=\"clearfix schema-form-tabarray schema-form-tabarray-{{form.tabType || \'left\'}} {{form.htmlClass}}\"><div ng-if=\"!form.tabType || form.tabType !== \'right\'\" ng-class=\"{\'col-xs-3\': !form.tabType || form.tabType === \'left\'}\"><ul class=\"nav nav-tabs\" ng-class=\"{ \'tabs-left\': !form.tabType || form.tabType === \'left\'}\"><li sf-field-model=\"ng-repeat\" ng-repeat=\"item in $$value$$ track by $index\" ng-click=\"$event.preventDefault() || (selected.tab = $index)\" ng-class=\"{active: selected.tab === $index}\"><a href=\"#\">{{interp(form.title,{\'$index\':$index, value: item}) || $index}}</a></li><li ng-hide=\"form.readonly\" ng-disabled=\"form.schema.maxItems <= modelArray.length\" ng-click=\"$event.preventDefault() || (selected.tab = appendToArray().length - 1)\"><a href=\"#\"><i class=\"glyphicon glyphicon-plus\"></i> {{ form.add || \'Add\'}}</a></li></ul></div><div ng-class=\"{\'col-xs-9\': !form.tabType || form.tabType === \'left\' || form.tabType === \'right\'}\"><div class=\"tab-content {{form.fieldHtmlClass}}\"><div class=\"tab-pane clearfix tab{{selected.tab}} index{{$index}}\" sf-field-model=\"ng-repeat\" ng-repeat=\"item in $$value$$ track by $index\" ng-show=\"selected.tab === $index\" ng-class=\"{active: selected.tab === $index}\"><div schema-form-array-items=\"\"></div><button ng-hide=\"form.readonly\" ng-click=\"selected.tab = deleteFromArray($index).length - 1\" ng-disabled=\"form.schema.minItems >= modelArray.length\" type=\"button\" class=\"btn {{ form.style.remove || \'btn-default\' }} pull-right\"><i class=\"glyphicon glyphicon-trash\"></i> {{ form.remove || \'Remove\'}}</button></div><div class=\"help-block\" ng-show=\"(hasError() && errorMessage(schemaError())) || form.description\" ng-bind-html=\"(hasError() && errorMessage(schemaError())) || form.description\"></div></div></div></div><div ng-if=\"form.tabType === \'right\'\" class=\"col-xs-3\"><ul class=\"nav nav-tabs tabs-right\"><li sf-field-model=\"ng-repeat\" ng-repeat=\"item in $$value$$ track by $index\" ng-click=\"$event.preventDefault() || (selected.tab = $index)\" ng-class=\"{active: selected.tab === $index}\"><a href=\"#\">{{interp(form.title,{\'$index\':$index, value: item}) || $index}}</a></li><li ng-hide=\"form.readonly\" ng-disabled=\"form.schema.maxItems <= modelArray.length\" ng-click=\"$event.preventDefault() || (selected.tab = appendToArray().length - 1)\"><a href=\"#\"><i class=\"glyphicon glyphicon-plus\"></i> {{ form.add || \'Add\'}}</a></li></ul></div>");
 $templateCache.put("decorators/bootstrap/tabs.html","<div sf-field-model=\"\" class=\"schema-form-tabs {{::form.htmlClass}}\"><md-tabs md-dynamic-height=\"\" md-selected=\"selected\" md-autoselect=\"\" ng-init=\"selected = 0\"></md-tabs></div>");
 $templateCache.put("decorators/bootstrap/textarea.html","<div class=\"form-group has-feedback {{form.htmlClass}} schema-form-textarea\" ng-class=\"{\'has-error\': form.disableErrorState !== true && hasError(), \'has-success\': form.disableSuccessState !== true && hasSuccess()}\"><label class=\"control-label {{form.labelHtmlClass}}\" ng-class=\"{\'sr-only\': !showTitle()}\" for=\"{{form.key.slice(-1)[0]}}\">{{form.title}}</label> <textarea ng-if=\"!form.fieldAddonLeft && !form.fieldAddonRight\" class=\"form-control {{form.fieldHtmlClass}}\" id=\"{{form.key.slice(-1)[0]}}\" sf-changed=\"form\" placeholder=\"{{form.placeholder}}\" ng-disabled=\"form.readonly\" sf-field-model=\"\" schema-validate=\"form\" name=\"{{form.key.slice(-1)[0]}}\"></textarea><div ng-if=\"form.fieldAddonLeft || form.fieldAddonRight\" ng-class=\"{\'input-group\': (form.fieldAddonLeft || form.fieldAddonRight)}\"><span ng-if=\"form.fieldAddonLeft\" class=\"input-group-addon\" ng-bind-html=\"form.fieldAddonLeft\"></span> <textarea class=\"form-control {{form.fieldHtmlClass}}\" id=\"{{form.key.slice(-1)[0]}}\" sf-changed=\"form\" placeholder=\"{{form.placeholder}}\" ng-disabled=\"form.readonly\" sf-field-model=\"\" schema-validate=\"form\" name=\"{{form.key.slice(-1)[0]}}\"></textarea> <span ng-if=\"form.fieldAddonRight\" class=\"input-group-addon\" ng-bind-html=\"form.fieldAddonRight\"></span></div><span class=\"help-block\" sf-message=\"form.description\"></span></div>");}]);
-angular.module('schemaForm').config(['schemaFormDecoratorsProvider', 'sfBuilderProvider', 'sfPathProvider',
-  function(decoratorsProvider, sfBuilderProvider, sfPathProvider) {
-    var base = 'decorators/bootstrap/';
+(function(angular, undefined) {'use strict';
 
-    var simpleTransclusion  = sfBuilderProvider.builders.simpleTransclusion;
-    var ngModelOptions      = sfBuilderProvider.builders.ngModelOptions;
-    var ngModel             = sfBuilderProvider.builders.ngModel;
-    var sfField             = sfBuilderProvider.builders.sfField;
-    var condition           = sfBuilderProvider.builders.condition;
-    var array               = sfBuilderProvider.builders.array;
+  var module = angular.module('schemaForm');
+  module.filter('sfCamelKey', sfCamelKeyFilter);
+  module.config(['schemaFormDecoratorsProvider', 'sfBuilderProvider', 'sfPathProvider',
+    function(decoratorsProvider, sfBuilderProvider, sfPathProvider) {
+      var base = 'decorators/bootstrap/';
 
-    var defaults = [sfField, ngModel, ngModelOptions, condition];
+      var simpleTransclusion = sfBuilderProvider.builders.simpleTransclusion;
+      var ngModelOptions = sfBuilderProvider.builders.ngModelOptions;
+      var ngModel = sfBuilderProvider.builders.ngModel;
+      var sfField = sfBuilderProvider.builders.sfField;
+      var condition = sfBuilderProvider.builders.condition;
+      var array = sfBuilderProvider.builders.array;
 
-    var mdTabs              = mdTabsBuilder;
+      var defaults = [sfField, ngModel, ngModelOptions, condition];
 
-    decoratorsProvider.defineDecorator('bootstrapDecorator', {
-      actions: {template: base + 'actions.html', builder: defaults},
-      array: {template: base + 'array.html', builder: [sfField, ngModelOptions, ngModel, array, condition]},
-      button: {template: base + 'submit.html', builder: defaults},
-      checkbox: { template: base + 'checkbox.html', builder: defaults },
-      checkboxes: {template: base + 'checkboxes.html', builder: [sfField, ngModelOptions, ngModel, array, condition]},
-      conditional: {template: base + 'section.html', builder: [sfField, simpleTransclusion, condition]},
-      'default': {template: base + 'default.html', builder: defaults},
-      fieldset: {template: base + 'fieldset.html', builder: [sfField, simpleTransclusion, condition]},
-      help: {template: base + 'help.html', builder: defaults},
-      number: {template: base + 'default.html', builder: defaults},
-      password: {template: base + 'default.html', builder: defaults},
-      radiobuttons: {template: base + 'radio-buttons.html', builder: defaults},
-      radios: {template: base + 'radios.html', builder: defaults},
-      'radios-inline': {template: base + 'radios-inline.html', builder: defaults},
-      section: {template: base + 'section.html', builder: [sfField, simpleTransclusion, condition]},
-      select: {template: base + 'select.html', builder: defaults},
-      submit: {template: base + 'submit.html', builder: defaults},
-      tabarray: {template: base + 'tabarray.html', builder: [sfField, ngModelOptions, ngModel, array, condition]},
-      tabs: {template: base + 'tabs.html', builder: [sfField, mdTabs, condition]},
-      textarea: {template: base + 'textarea.html', builder: defaults}
-    }, []);
+      var mdTabs = mdTabsBuilder;
 
-    function mdTabsBuilder(args) {
-      if (args.form.tabs && args.form.tabs.length > 0) {
-        var mdTabsFrag = args.fieldFrag.querySelector('md-tabs');
+      decoratorsProvider.defineDecorator('bootstrapDecorator', {
+        actions: {template: base + 'actions.html', builder: defaults},
+        array: {template: base + 'array.html', builder: [sfField, ngModelOptions, ngModel, array, condition]},
+        button: {template: base + 'submit.html', builder: defaults},
+        checkbox: {template: base + 'checkbox.html', builder: defaults},
+        checkboxes: {template: base + 'checkboxes.html', builder: [sfField, ngModelOptions, ngModel, array, condition]},
+        conditional: {template: base + 'section.html', builder: [sfField, simpleTransclusion, condition]},
+        'default': {template: base + 'default.html', builder: defaults},
+        fieldset: {template: base + 'fieldset.html', builder: [sfField, simpleTransclusion, condition]},
+        help: {template: base + 'help.html', builder: defaults},
+        number: {template: base + 'default.html', builder: defaults},
+        password: {template: base + 'default.html', builder: defaults},
+        radiobuttons: {template: base + 'radio-buttons.html', builder: defaults},
+        radios: {template: base + 'radios.html', builder: defaults},
+        'radios-inline': {template: base + 'radios-inline.html', builder: defaults},
+        section: {template: base + 'section.html', builder: [sfField, simpleTransclusion, condition]},
+        select: {template: base + 'select.html', builder: defaults},
+        submit: {template: base + 'submit.html', builder: defaults},
+        tabarray: {template: base + 'tabarray.html', builder: [sfField, ngModelOptions, ngModel, array, condition]},
+        tabs: {template: base + 'tabs.html', builder: [sfField, mdTabs, condition]},
+        textarea: {template: base + 'textarea.html', builder: defaults}
+      }, []);
 
-        args.form.tabs.forEach(function(tab, index) {
-          var mdTab = document.createElement('md-tab');
-          mdTab.setAttribute('label', '{{' + args.path + '.tabs[' + index + '].title}}');
-          var mdTabBody = document.createElement('md-tab-body');
-          var childFrag = args.build(tab.items, args.path + '.tabs[' + index + '].items', args.state);
-          mdTabBody.appendChild(childFrag);
-          mdTab.appendChild(mdTabBody);
-          mdTabsFrag.appendChild(mdTab);
-        });
-      }
+      function mdTabsBuilder(args) {
+        if (args.form.tabs && args.form.tabs.length > 0) {
+          var mdTabsFrag = args.fieldFrag.querySelector('md-tabs');
+
+          args.form.tabs.forEach(function (tab, index) {
+            var mdTab = document.createElement('md-tab');
+            mdTab.setAttribute('label', '{{' + args.path + '.tabs[' + index + '].title}}');
+            var mdTabBody = document.createElement('md-tab-body');
+            var childFrag = args.build(tab.items, args.path + '.tabs[' + index + '].items', args.state);
+            mdTabBody.appendChild(childFrag);
+            mdTab.appendChild(mdTabBody);
+            mdTabsFrag.appendChild(mdTab);
+          });
+        }
+      };
+    }
+  ]);
+
+  /**
+   * sfCamelKey Filter
+   */
+  function sfCamelKeyFilter() {
+    return function(formKey) {
+      if (!formKey) { return ''; };
+      var part, i, key;
+      key = formKey.slice();
+      for (i = 0; i < key.length; i++) {
+        part = key[i].toLowerCase().split('');
+        if (i && part.length) { part[0] = part[0].toUpperCase(); };
+        key[i] = part.join('');
+      };
+      return key.join('');
     };
+  };
 
-  }
-]);
+})(angular, undefined);
