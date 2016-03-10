@@ -8,9 +8,9 @@ function(decoratorsProvider, sfBuilderProvider, sfPathProvider) {
   var sfField             = sfBuilderProvider.builders.sfField;
   var condition           = sfBuilderProvider.builders.condition;
   var array               = sfBuilderProvider.builders.array;
-
+  var mdTabs             = mdTabsBuilder;
   // Tabs is so bootstrap specific that it stays here.
-  var tabs = function(args) {
+  /*var tabs = function(args) {
     if (args.form.tabs && args.form.tabs.length > 0) {
       var tabContent = args.fieldFrag.querySelector('.tab-content');
 
@@ -26,7 +26,7 @@ function(decoratorsProvider, sfBuilderProvider, sfPathProvider) {
         tabContent.appendChild(div);
       });
     }
-  };
+  };*/
 
   var defaults = [sfField, ngModel, ngModelOptions, condition];
   decoratorsProvider.defineDecorator('bootstrapDecorator', {
@@ -34,7 +34,7 @@ function(decoratorsProvider, sfBuilderProvider, sfPathProvider) {
     fieldset: {template: base + 'fieldset.html', builder: [sfField, simpleTransclusion, condition]},
     array: {template: base + 'array.html', builder: [sfField, ngModelOptions, ngModel, array, condition]},
     tabarray: {template: base + 'tabarray.html', builder: [sfField, ngModelOptions, ngModel, array, condition]},
-    tabs: {template: base + 'tabs.html', builder: [sfField, ngModelOptions, tabs, condition]},
+    tabs: {template: base + 'tabs.html', builder: [sfField, mdTabs, condition]},
     section: {template: base + 'section.html', builder: [sfField, simpleTransclusion, condition]},
     conditional: {template: base + 'section.html', builder: [sfField, simpleTransclusion, condition]},
     actions: {template: base + 'actions.html', builder: defaults},
@@ -51,5 +51,21 @@ function(decoratorsProvider, sfBuilderProvider, sfPathProvider) {
     help: {template: base + 'help.html', builder: defaults},
     'default': {template: base + 'default.html', builder: defaults}
   }, []);
+
+  function mdTabsBuilder(args) {
+    if (args.form.tabs && args.form.tabs.length > 0) {
+      var mdTabsFrag = args.fieldFrag.querySelector('md-tabs');
+
+      args.form.tabs.forEach(function(tab, index) {
+        var mdTab = document.createElement('md-tab');
+        mdTab.setAttribute('label', '{{' + args.path + '.tabs[' + index + '].title}}');
+        var mdTabBody = document.createElement('md-tab-body');
+        var childFrag = args.build(tab.items, args.path + '.tabs[' + index + '].items', args.state);
+        mdTabBody.appendChild(childFrag);
+        mdTab.appendChild(mdTabBody);
+        mdTabsFrag.appendChild(mdTab);
+      });
+    }
+  };
 
 }]);

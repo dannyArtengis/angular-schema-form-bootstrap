@@ -1,23 +1,16 @@
-<!--<div ng-init="selected = { tab: 0 }" class="schema-form-tabs {{form.htmlClass}}">
-  <ul class="nav nav-tabs">
-    <li ng-repeat="tab in form.tabs"
-        ng-disabled="form.readonly"
-        ng-click="$event.preventDefault() || (selected.tab = $index)"
-        ng-class="{active: selected.tab === $index}">
-      <a href="#">{{ tab.title }}</a>
-    </li>
-  </ul>
+<!--<div ng-init="selected = { tab: 0 }" class="schema-form-tabs {{form.htmlClass}}">-->
+  <!--<ul class="nav nav-tabs">-->
+    <!--<li ng-repeat="tab in form.tabs"-->
+        <!--ng-disabled="form.readonly"-->
+        <!--ng-click="$event.preventDefault() || (selected.tab = $index)"-->
+        <!--ng-class="{active: selected.tab === $index}">-->
+      <!--<a href="#">{{ tab.title }}</a>-->
+    <!--</li>-->
+  <!--</ul>-->
 
-  <div class="tab-content {{form.fieldHtmlClass}}">
-  </div>
-</div>-->
-
-<md-tabs md-dynamic-height md-border-bottom>
-  <md-tab ng-repeat="tab in form.tabs"
-          ng-click="$event.preventDefault() || (selected.tab = $index)"
-          ng-disabled="form.readonly" label="{{tab.title}}">
-    <md-content class="md-padding">
-      <div class="tab-content {{form.fieldHtmlClass}}"></div>
-    </md-content>
-  </md-tab>
-</md-tabs>
+  <!--<div class="tab-content {{form.fieldHtmlClass}}">-->
+  <!--</div>-->
+<!--</div>-->
+<div sf-field-model class="schema-form-tabs {{::form.htmlClass}}">
+  <md-tabs md-dynamic-height md-selected="selected" md-autoselect ng-init="selected = 0"></md-tabs>
+</div>
